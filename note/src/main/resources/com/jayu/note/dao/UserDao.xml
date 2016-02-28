@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.1//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jayu.note.dao.UserDao">
+	
+	<!-- 加入默认缓存 
+	<cache />
+	-->
+	<!-- 结果集返回 -->
+	<resultMap id="result" type="com.jayu.note.dao.model.User">
+   		<!-- javaType="Long" jdbcType="BIGINT"-->
+   		<id property="userId" column="user_id"/>
+   		<!--  javaType="String" jdbcType="VARCHAR" -->
+   		<result property="account" column="account"/>
+   		<result property="accountType" column="account_type"/>
+   		<!--  javaType="String" jdbcType="VARCHAR" -->
+   		<result property="passwd" column="passwd"/>
+   		<!--  javaType="String" jdbcType="VARCHAR" -->
+   		<result property="nick" column="nick"/>
+   		<!--  javaType="String" jdbcType="VARCHAR" -->
+   		<result property="email" column="email"/>
+   		<!--  javaType="String" jdbcType="VARCHAR" -->
+   		<result property="headerImg" column="header_img"/>
+   		<!--  javaType="String" jdbcType="VARCHAR" -->
+   		<result property="signature" column="signature"/>
+   		<!--  javaType="Integer" jdbcType="SMALLINT" -->
+   		<result property="templateId" column="template_id"/>
+   		<!--  javaType="Integer" jdbcType="TINYINT" -->
+   		<result property="lock" column="login_lock"/>
+   		<!--  javaType="String" jdbcType="VARCHAR" -->
+   		<result property="lockNo" column="login_lock_no"/>
+   		<result property="lockExpire" column="login_lock_expire"/>
+   		<!--  javaType="Date" jdbcType="DATETIME" -->
+   		<result property="registerTime" column="register_time"/>
+   		<!--  javaType="Date" jdbcType="DATETIME" -->
+   		<result property="loginTime" column="login_time"/>
+   		<result property="failNumber" column="fail_number"/>
+   		<!--  javaType="Long" jdbcType="BIGINT" -->
+   		<result property="loginNumber" column="login_number"/>
+	</resultMap>
+
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="fields">
+    <![CDATA[
+			user_id,
+			account,
+			account_type,
+			passwd,
+			nick,
+			email,
+			header_img,
+			signature,
+			template_id,
+			login_lock,
+			login_lock_no,
+			login_lock_expire,
+			register_time,
+			login_time,
+			fail_number,
+			login_number
+    ]]>
+	</sql>
+	
+	<sql id="fieldsSimple">
+    <![CDATA[
+			user_id,
+			account,
+			account_type,
+			nick,
+			email,
+			login_lock,
+			login_lock_no,
+			login_lock_expire,
+			register_time,
+			login_time
+    ]]>
+	</sql>
+	<!-- 用于动态组合查询条件 -->
+	<sql id="whereSQL">
+		<if test="pd.whereObjList != null">
+			<where>
+				<foreach collection="pd.whereObjList" item="wo" >
+					<if test="wo.whereKey != null">${wo.whereKey}</if>
+					<choose>
+						<when test="wo.whereOp == 'in' or wo.whereOp == 'IN'">
+							${wo.whereOp}
+							<if test="wo.whereValType == 'list' and  wo.whereValList != null">
+								<foreach collection="wo.whereValList" item="wv" open="("
+								separator="," close=")">${wv}</foreach>
+							</if>
+							<if test="wo.whereValType == 'array' and  wo.whereVal != null">
+								<foreach collection="wo.whereVal" item="wv" open="("
+								separator="," close=")">${wv}</foreach>
+							</if>
+						</when>
+						<when test="wo.whereVal != '' and wo.whereVal != null">
+							<![CDATA[ ${wo.whereOp}]]> #{wo.whereVal[0]}
+						</when>
+						<when test="wo.whereValSql != '' and wo.whereValSql != null">
+							<![CDATA[ ${wo.whereValSql}]]> 
+						</when>
+						<otherwise>
+							<![CDATA[ ${wo.whereOp}]]>
+						</otherwise>
+					</choose>
+				</foreach>
+			</where>
+		</if>
+	</sql>
+	<!-- 分页查询前缀部分  -->
+    <sql id="pagingTop">
+            SELECT * FROM (
+    </sql>
+    
+    <!-- 分页查询后缀部分  -->
+    <sql id="pagingBottom">
+		<![CDATA[LIMIT #{firstIndex,jdbcType=INTEGER} , #{maxIndex,jdbcType=INTEGER} ]]>
+    </sql>
+
+    <!-- 排序  -->
+    <sql id="orderBySQL">
+        <if test="pd.orderBy != null">
+            ORDER BY ${pd.orderBy}
+        </if>
+    </sql>
+    	<!-- 唯一 -->
+	<sql id="distinctSql">
+		<if test="pd.distinct" >DISTINCT</if>
+	</sql>
+	<!-- 条件查询只取一条数据 -->
+    <sql id="rowLimit">
+		<if test="pd.rowLimit and _databaseId=='MySQL'" ><![CDATA[LIMIT #{pd.rowMin} , #{pd.rowMax} ]]></if>
+    </sql>
+    <!-- 添加数据  -->
+    <insert id="insert" useGeneratedKeys="true" statementType="PREPARED" keyProperty="userId" parameterType="com.jayu.note.dao.model.User">
+        INSERT INTO USER(
+                <include refid="fields" />
+        ) VALUES (
+                #{userId} ,
+                #{account} ,
+                #{accountType} ,
+                #{passwd} ,
+                #{nick} ,
+                #{email} ,
+                #{headerImg} ,
+                #{signature} ,
+                #{templateId} ,
+                #{lock} ,
+                #{lockNo} ,
+                #{lockExpire} ,
+                #{registerTime} ,
+                #{loginTime} ,
+                 #{failNumber} ,
+                #{loginNumber} 
+        )
+    </insert>
+    
+    <!-- 添加数据  -->
+	<insert id="insertSelective" useGeneratedKeys="true" statementType="PREPARED" keyProperty="userId" parameterType="com.jayu.note.dao.model.User">
+		INSERT INTO USER
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			USER_ID,
+            <if test="account!=null">
+				ACCOUNT ,
+            </if>
+            <if test="accountType!=null">
+				ACCOUNT_TYPE ,
+            </if>
+            <if test="passwd!=null">
+				PASSWD ,
+            </if>
+            <if test="nick!=null">
+				NICK ,
+            </if>
+            <if test="email!=null">
+				EMAIL ,
+            </if>
+            <if test="headerImg!=null">
+				HEADER_IMG ,
+            </if>
+            <if test="signature!=null">
+				SIGNATURE ,
+            </if>
+            <if test="templateId!=null">
+				TEMPLATE_ID ,
+            </if>
+            <if test="lock!=null">
+				LOGIN_LOCK ,
+            </if>
+            <if test="lockNo!=null">
+				LOGIN_LOCK_NO ,
+            </if>
+             <if test="lockExpire!=null">
+				LOGIN_LOCK_EXPIRE ,
+            </if>
+            <if test="registerTime!=null">
+				REGISTER_TIME ,
+            </if>
+            <if test="loginTime!=null">
+				LOGIN_TIME ,
+            </if>
+            <if test="failNumber!=null">
+				FAIL_NUMBER ,
+            </if>
+            <if test="loginNumber!=null">
+				LOGIN_NUMBER 
+            </if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			#{userId},
+			 <if test="account!=null">
+				#{account},
+            </if>
+            <if test="accountType!=null">
+				#{accountType},
+            </if>
+			 <if test="passwd!=null">
+				#{passwd},
+            </if>
+			 <if test="nick!=null">
+				#{nick},
+            </if>
+			 <if test="email!=null">
+				#{email},
+            </if>
+			 <if test="headerImg!=null">
+				#{headerImg},
+            </if>
+			 <if test="signature!=null">
+				#{signature},
+            </if>
+			 <if test="templateId!=null">
+				#{templateId},
+            </if>
+			 <if test="lock!=null">
+				#{lock},
+            </if>
+			 <if test="lockNo!=null">
+				#{lockNo},
+            </if>
+             <if test="lockExpire!=null">
+				#{lockExpire},
+            </if>
+			 <if test="registerTime!=null">
+				#{registerTime},
+            </if>
+			 <if test="loginTime!=null">
+				#{loginTime},
+            </if>
+            <if test="failNumber!=null">
+				#{failNumber},
+            </if>
+			 <if test="loginNumber!=null">
+				#{loginNumber}
+            </if>
+		</trim>
+	</insert>
+  
+    <!--修改数据-->
+    <update id="update" statementType="PREPARED" parameterType="com.jayu.note.dao.model.User">
+    	UPDATE USER 
+    	<set>
+            <if test="account!=null">
+				ACCOUNT = #{account} ,
+            </if>
+            <if test="accountType!=null">
+				ACCOUNT_TYPE = #{accountType} ,
+            </if>
+            <if test="passwd!=null">
+				PASSWD = #{passwd} ,
+            </if>
+            <if test="nick!=null">
+				NICK = #{nick} ,
+            </if>
+            <if test="email!=null">
+				EMAIL = #{email} ,
+            </if>
+            <if test="headerImg!=null">
+				HEADER_IMG = #{headerImg} ,
+            </if>
+            <if test="signature!=null">
+				SIGNATURE = #{signature} ,
+            </if>
+            <if test="templateId!=null">
+				TEMPLATE_ID = #{templateId} ,
+            </if>
+            <if test="lock!=null">
+				LOGIN_LOCK = #{lock} ,
+            </if>
+            <if test="lockNo!=null">
+				LOGIN_LOCK_NO = #{lockNo} ,
+            </if>
+            <if test="lockExpire!=null">
+				LOGIN_LOCK_EXPIRE = #{lockExpire} ,
+            </if>
+            <if test="registerTime!=null">
+				REGISTER_TIME = #{registerTime} ,
+            </if>
+            <if test="loginTime!=null">
+				LOGIN_TIME = #{loginTime} ,
+            </if>
+             <if test="failNumber!=null">
+				FAIL_NUMBER = #{failNumber} ,
+            </if>
+            <if test="loginNumber!=null">
+				LOGIN_NUMBER = #{loginNumber} 
+            </if>
+        </set>
+    	<where>
+			USER_ID = #{userId}
+        </where>        
+    </update>
+    <!--删除数据-->
+    <delete id="delete" statementType="PREPARED" parameterType="Long">
+        DELETE FROM USER WHERE
+			USER_ID = #{userId}
+    </delete>
+
+    <!-- 批量删除 -->
+    <delete id="deleteBatch" statementType="PREPARED">
+		DELETE FROM USER WHERE
+			USER_ID IN 
+			<foreach collection="array" item="id" open="(" separator="," close=")">
+#{id}			
+			</foreach>
+    </delete>
+    
+    <!-- 查询数据总数 -->
+    <select id="getCount" resultType="int" statementType="PREPARED">
+        SELECT count(1) FROM USER
+        <include refid="whereSQL" />
+    </select>
+    
+    <!--查询分页数据-->
+    <select id="findPageDataByWhereAndOrderBy" statementType="PREPARED" resultMap="result" >
+        SELECT <include refid="fieldsSimple" />
+          FROM USER
+        <include refid="whereSQL" />
+    	<include refid="orderBySQL" />
+        <include refid="pagingBottom" />
+    </select>
+    
+    <!--查询单条数据-->
+    <select id="get" parameterType="Long" statementType="PREPARED"  resultMap="result">
+		SELECT <include refid="fields" />
+		  FROM USER
+		<where> 
+			USER_ID = #{userId}
+		</where>
+    </select> 
+    
+    <!--查询所有数据-->
+	<select id="findAllData" statementType="PREPARED"  resultMap="result">
+		SELECT
+		<include refid="fields" />
+		FROM USER
+	</select>
+
+    <!--按条件查询数据-->
+	<select id="findDataByCondition"  statementType="PREPARED"  resultMap="result">
+		SELECT	
+		<include refid="distinctSql" />
+		<include refid="fields" />
+		FROM USER
+		<include refid="whereSQL" />
+		<include refid="rowLimit" />
+		<include refid="orderBySQL" />
+	</select>
+   
+</mapper>

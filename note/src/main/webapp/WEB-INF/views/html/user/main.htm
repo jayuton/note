@@ -1,0 +1,100 @@
+<@override name="title">首页</@override> 
+<@override name="header">
+	<link href="${contextPath}/assets/css/pages/blog.css" rel="stylesheet" type="text/css"/>
+	<link href="${contextPath}/assets/js/plugins/editormd/css/editormd.min.css"  rel="stylesheet" type="text/css"  />
+	<script src="${contextPath}/assets/js/plugins/editormd/lib/marked.min.js"></script>
+	 <script src="${contextPath}/assets/js/plugins/editormd/lib/prettify.min.js"></script>
+	 <script src="${contextPath}/assets/js/plugins/editormd/lib/raphael.min.js"></script>
+	 <script src="${contextPath}/assets/js/plugins/editormd/lib/underscore.min.js"></script>
+	 <script src="${contextPath}/assets/js/plugins/editormd/lib/sequence-diagram.min.js"></script>
+	 <script src="${contextPath}/assets/js/plugins/editormd/lib/flowchart.min.js"></script>
+	 <script src="${contextPath}/assets/js/plugins/editormd/lib/jquery.flowchart.min.js"></script>
+	<script src="${contextPath}/assets/js/plugins/editormd/editormd.js"></script>
+</@override> 
+<@override name="page-content-body">
+<div class="row">
+	<div class="col-md-12 blog-page">
+		<div class="row">
+			<div class="col-md-9 col-sm-8 article-block">
+				<h2>最近分享笔记</h2>
+					<#if  articleList?? && (articleList?size>0) >
+					<#list articleList  as article>
+					<div class="row">
+						<div class="col-md-12 blog-article">
+							<h3>
+								<a href="${basePath}/guest/article/view/${article.id}"  target="_blank">${article.title}</a>
+							</h3>
+							<div class=" blog-img blog-tag-data">
+								<ul class="list-inline blog-tags pull-left">
+									<li><i class="fa fa-tags"></i> 
+										<#if  (article.tagsList)?? && (article.tagsList?size>0) >
+										<#list (article.tagsList)  as tag>
+											<a href="#"> ${tag} </a>
+											</#list>
+											</#if>
+										</li>
+								</ul>
+								<ul class="list-inline pull-right">
+									<li><i class="fa fa-user"></i>${article.authorName}</li>
+									<li><i class="fa fa-calendar"></i> ${article.writeTime?string("yyyy-MM-dd HH:mm")}</li>
+									<li><i class="fa fa-comments"></i> ${article.replyCount} Comments </li>
+								</ul>
+							</div>
+							<div class="clearfix"></div>
+							<p class="md-content"  id="md_${article.id}"><textarea style="display:none;" class="markdown-doc">${article.shortContent}</textarea></p>
+						</div>
+					</div>
+					<hr>
+					</#list>
+					</#if>
+			</div>
+			<!--end col-md-9-->
+			<div class="col-md-3 col-sm-4 blog-sidebar">
+				<h3>笔记排行</h3>
+				<div class="top-news">
+					<a href="#" class="btn red"> <span> 标题</span> <em>发布时间</em> <em> <i class="fa fa-tags"></i> 标签
+					</em> <i class="fa fa-briefcase top-news-icon"></i>
+					</a>
+				<a href="#" class="btn green"> <span> 本周排行 </span> <em>发布时间</em> <em> <i class="fa fa-tags"></i> 标签
+					</em> <i class="fa fa-music top-news-icon"></i>
+					</a> 
+				</div>				
+			
+				<div class="space20"></div>
+					<h3>朋友圈</h3>
+					<div class="blog-twitter">	
+						<div class="blog-twitter-block">
+							<a href="">
+								 朋友圈1
+							</a>
+						</div>
+						<div class="blog-twitter-block">
+							<a href="">
+								 朋友圈2
+							</a>
+						</div>
+				</div>
+			
+				<div class="space20"></div>
+				<h3>收藏地址</h3>
+				<div class="blog-twitter">	
+					<div class="blog-twitter-block">
+						<a href="">
+							 收藏链接地址1
+						</a>
+					</div>
+					<div class="blog-twitter-block">
+						<a href="">
+							 收藏链接地址2
+						</a>
+					</div>
+				</div>
+					
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script src="${contextPath}/assets/js/bjs/user/main-init.js"
+	type="text/javascript"></script>
+</@override> <@extends name="/user-template.htm"/>

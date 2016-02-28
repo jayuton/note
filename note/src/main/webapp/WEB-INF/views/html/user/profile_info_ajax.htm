@@ -1,0 +1,68 @@
+<div class="portlet box blue">
+	<div class="portlet-title">
+		<div class="caption">
+			<i class="fa fa-reorder"></i> 会员详细资料
+		</div>
+	</div>
+	<div class="portlet-body form">
+		<form role="form"  id="profileForm">
+			<div class="form-body">
+				<#if user??>
+				<div class="form-group">
+					<label for="account">账号</label> <input type="account"
+						class="form-control" id="account" value="${user.account}" data-validate="validate(required:账号不能为空:, maxlength:账号长度至最多为{arg1}:(30)) on(keyup blur)"
+						readonly="">
+				</div>
+				<div class="form-group">
+					<label for="nick">用户名</label> <input type="email"
+						class="form-control" id="nick" value="${user.nick}"  data-validate="validate(required:用户名不能为空:, maxlength:用户名长度至最多为{arg1}:(30)) on(keyup blur)"
+						placeholder="Enter text">
+				</div>
+				<div class="form-group">
+					<label>Email Address</label>
+					<div class="input-icon"> <i class="fa fa-envelope"></i>
+						<input type="text" class="form-control" data-validate="validate(required,email,maxlength(30)) on(keyup blur)"
+							placeholder="Email Address" id="email" value="${user.email}"> 
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="oldPassword">Old Password</label>
+					<div class="input-icon" >
+							<i class="fa fa-lock"></i>
+							<input type="password" class="form-control " id="oldPassword"
+							placeholder="Old Password">
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="newPassword">New Password</label>
+					<div class="input-icon">
+							<i class="fa fa-lock"></i>
+						<input type="password" class="form-control" id="newPassword"
+							placeholder="New Password">
+					</div>
+				</div>
+
+				</#if>
+			</div>
+			<div class="form-actions">
+				<button type="button" class="btn blue"  id="profileSubmitButton">Update</button>
+				<button type="button" class="btn default" onclick="history.back()">Cancel</button>
+			</div>
+		</form>
+	</div>
+</div>
+<link href="${contextPath}/assets/js/tjs/validate/css/jquery.ketchup.css" rel="stylesheet" media="screen" type="text/css" />
+<script src="${contextPath}/assets/js/ojs/common.js" type="text/javascript"></script>
+<script src="${contextPath}/assets/js/ojs/note.util.js" type="text/javascript"></script>
+			<script src="${contextPath}/assets/js/ojs/serviceAxClient.js"
+		type="text/javascript"></script>
+<script src="${contextPath}/assets/js/tjs/validate/jquery.ketchup.js" type="text/javascript"></script>
+<script src="${contextPath}/assets/js/tjs/validate/jquery.ketchup.validations_zh.js" type="text/javascript"></script>
+<script src="${contextPath}/assets/js/tjs/validate/jquery.ketchup.helpers.js" type="text/javascript"></script>
+<script src="${contextPath}/assets/js/bjs/user/profile.js"
+		type="text/javascript"></script>
+<script>
+		$(function() {
+			Profile.init();
+		});
+	</script>

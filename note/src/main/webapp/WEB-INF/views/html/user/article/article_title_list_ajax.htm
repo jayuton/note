@@ -1,0 +1,17 @@
+ <#if articleList?? && (articleList?size>0) > 
+ <#list articleList as article>
+<li class="title" id="${article.id}">
+<a class="btn readAjax"
+	data-id="${article.id}" 
+	href="javascript:;">
+						<span class="left">${article.title}</span>
+						<span  class="right">${article.writeTime?string("YYYY-MM-dd")}</span>
+					</a>
+					<b> </b>
+					<span class="btng">
+						<i class="fa fa-share-square-o" title="分享" onclick="shareDialog(this)"></i>
+						<i class="fa fa-trash" title="删除" onclick="user.article.delArtilce(this)"></i>
+					</span>
+</li>
+</#list> </#if>
+

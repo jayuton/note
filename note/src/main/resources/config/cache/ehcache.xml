@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="ehcache.xsd" updateCheck="true"
+monitoring="autodetect" dynamicConfig="true">
+	<!--terracotta服务器配置,默认端口为9510,多个服务器用,分隔  -->
+	<defaultCache maxElementsInMemory="1000" eternal="false"
+	timeToIdleSeconds="60" timeToLiveSeconds="30" overflowToDisk="true"
+	maxElementsOnDisk="10000" diskPersistent="false"
+	diskExpiryThreadIntervalSeconds="120" memoryStoreEvictionPolicy="LRU" ></defaultCache>
+	<cache name="menuModules"
+	 	maxBytesLocalHeap="10m"
+         eternal="false"
+         timeToIdleSeconds="600"
+         timeToLiveSeconds="300"
+         maxElementsOnDisk="0"
+         memoryStoreEvictionPolicy="LFU" >
+	</cache>
+</ehcache>  

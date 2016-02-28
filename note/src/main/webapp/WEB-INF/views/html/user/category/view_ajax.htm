@@ -1,0 +1,78 @@
+
+<link href="${contextPath}/assets/js/plugins/bootstrap-gtreetable/bootstrap-gtreetable.css" rel="stylesheet" />
+
+
+<!-- BEGIN PAGE CONTENT-->
+<div class="row" >
+	<div><table class="table gtreetable" id="gtreetable"><thead><tr><th>文章类目</th></tr></thead></table></div>
+</div>
+<!-- END PAGE CONTENT-->
+		
+<script src="${contextPath}/assets/js/tjs/jquery.browser.min.js"
+	type="text/javascript"></script>
+<script type="text/javascript" src="${contextPath}/assets/js/plugins/bootstrap-gtreetable/bootstrap-gtreetable.js"></script>
+<!-- END CORE PLUGINS -->
+
+<script>
+	$(function() {
+		jQuery('#gtreetable').gtreetable({
+			  'buttonsDirectContainer':'.page-content-body',
+			  'source': function (id) {
+			      return {
+			        type: 'GET',
+			        url: '${contextPath}/user/category/nodeChildren',
+			        data: { 'id': id },        
+			        dataType: 'json',
+			        error: function(XMLHttpRequest) {
+			          alert(XMLHttpRequest.status+': '+XMLHttpRequest.responseText);
+			        }
+			      }
+			    },
+			    'onSave':function (oNode) {
+			        return {
+			          type: 'POST',
+			          url: !oNode.isSaved() ? '${contextPath}/user/category/nodeCreate' : '${contextPath}/user/category/nodeUpdate?id=' + oNode.getId(),
+			          data: {
+			            parent: oNode.getParent(),
+			            name: oNode.getName(),
+			            position: oNode.getInsertPosition(),
+			            related: oNode.getRelatedNodeId()
+			          },
+			          dataType: 'json',
+			          error: function(XMLHttpRequest) {
+			            alert(XMLHttpRequest.status+': '+XMLHttpRequest.responseText);
+			          }
+			        };
+			      },
+			      'onDelete':function (oNode) {
+			        return {
+			          type: 'POST',
+			          url: "${contextPath}/user/category/"+'nodeDelete?id=' + oNode.getId(),
+			          dataType: 'json',
+			          error: function(XMLHttpRequest) {
+			            alert(XMLHttpRequest.status+': '+XMLHttpRequest.responseText);
+			          }
+			        };
+			      },
+			    'draggable': true,
+			    'manyroots':true,
+			    'onMove': function (oSource, oDestination, position) {
+			      return {
+			        type: 'POST',
+			        url: "${contextPath}/user/category/"+'nodeMove?id=' + oSource.getId(),
+			        data: {
+			          related: oDestination.getId(),
+			          position: position
+			        },
+			        dataType: 'json',
+			        error: function(XMLHttpRequest) {
+			          alert(XMLHttpRequest.status+': '+XMLHttpRequest.responseText);
+			        }
+			      }; 
+			    },
+			    'language':'zh-CN',
+			    'types': {'folder':'fa fa-folder-open','file':'fa fa-file'}
+			});
+	});
+</script>
+<!-- END JAVASCRIPTS -->

@@ -1,0 +1,26 @@
+<!DOCTYPE form-validation PUBLIC
+     "-//Apache Software Foundation//DTD Commons Validator Rules Configuration 1.3.0//EN"
+     "/com/jayu/validator/resources/validator_1_3_0.dtd">
+<form-validation>
+	<global>
+	<constant>
+		<constant-name>right_string</constant-name>
+		<!-- 仅中文加数字,字母和下划线-->
+		<constant-value>^[\\u4E00-\\u9FA5\\uF900-\\uFA2D\w]+$</constant-value>
+	</constant>
+	</global>
+   <formset>
+      <form name="user.login.logindo">
+     	 <field property="staffCode"  xpath="$.staffCode"  depends="requiredStr,mask">
+     	 	<msg name="requiredStr" key="用户名不能为空" resource="false"/>
+     	 	<msg name="mask" key="用户名入参不合法" resource="false"/>
+     	 	<var>
+     	 		<var-name>mask</var-name>
+     	 		<var-value>${right_string}</var-value>
+     	 	</var>
+         </field>
+         <field property="password"  xpath="$.password"  depends="requiredStr">
+	         	<msg name="requiredStr" key="密码不能为空" resource="false"/>
+         </field>
+      </form>   
+</form-validation>

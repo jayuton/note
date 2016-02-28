@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+  http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+  version="3.0"
+  metadata-complete="true">
+	<display-name>笔记web工程</display-name>
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath*:/config/spring/portal-context.xml</param-value>
+	</context-param>
+	<context-param>
+		<param-name>logbackConfigLocation</param-name>
+		<param-value>classpath:/config/log/logback.xml</param-value>
+	</context-param>
+	<filter>
+		<filter-name>character_encoding_filter</filter-name>
+		<filter-class>com.jayu.web.filter.CharacterAndFileEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forceEncoding</param-name>
+			<param-value>true</param-value><!-- 强制进行转码 -->
+		</init-param>
+		<init-param>
+			<!-- 只能在本网站页面显示/DENY 表示都不能被iframe嵌入 -->
+			<param-name>xframeOptions</param-name>
+			<param-value>SAMEORIGIN</param-value>
+		</init-param>
+		<!-- 是否资源请求路径 -->
+		<init-param>
+			<param-name>resourceTypes</param-name>
+			<param-value>js,css,jpeg,gif,jpg,png,bmp,flv,swf,rar</param-value>
+		</init-param>
+	</filter>
+	<filter>
+		<filter-name>csrf_filter</filter-name>
+		<filter-class>com.jayu.web.filter.CsrfPreventionFilter</filter-class>
+		<async-supported>true</async-supported>
+		<!-- token key -->
+		<init-param>
+			<param-name>token</param-name>
+			<param-value>_token</param-value>
+		</init-param>
+		<init-param>
+			<param-name>cookieCheck</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>character_encoding_filter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>csrf_filter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>com.jayu.web.log.LogbackConfigListener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+	</listener>
+	 <listener>
+     <listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
+    </listener>
+	<servlet>
+		<servlet-name>noteServlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath*:/config/spring/servlet-context.xml</param-value>
+		</init-param>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>noteServlet</servlet-name>
+		<!-- 这里可以用 / 但不能用 /* ，拦截了所有请求会导致静态资源无法访问，所以要在spring3-servlet.xml中配置mvc:resources -->
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+	<!-- session超时定义,单位为分钟 -->
+	<session-config>
+		<session-timeout>60</session-timeout>
+	</session-config>
+
+	<!-- 使访问首页失效 -->
+	<welcome-file-list>
+		<welcome-file></welcome-file>
+	</welcome-file-list>
+	<error-page>
+		<error-code>404</error-code>
+		<location>/error/404.htm</location>
+	</error-page>
+	<error-page>
+		<error-code>403</error-code>
+		<location>/error/403.htm</location>
+	</error-page>
+	<error-page>
+		<error-code>500</error-code>
+		<location>/error/500.htm</location>
+	</error-page>
+
+	<security-constraint>
+		<display-name>资源安全访问控制</display-name>
+		<web-resource-collection>
+			<web-resource-name>保护以下哪些资源请求的方法</web-resource-name>
+			<!-- 哪些资源受保护 -->
+			<url-pattern>/*</url-pattern>
+			<!-- 以下请求方法属于非法访问,被禁止 -->
+			<http-method>DELETE</http-method>
+			<http-method>PUT</http-method>
+			<http-method>TRACE</http-method>
+			<http-method>OPTIONS</http-method>
+		</web-resource-collection>
+		<auth-constraint></auth-constraint>
+	</security-constraint>
+</web-app>

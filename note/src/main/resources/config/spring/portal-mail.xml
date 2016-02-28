@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd"
+	default-lazy-init="false">
+
+	<!-- 配置异步发送器-->
+	<bean id="taskExecutor"
+		class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<property name="corePoolSize" value="2" />
+		<property name="maxPoolSize" value="5" />
+		<property name="queueCapacity" value="25" />
+		
+	</bean>
+	<!-- 配置邮件模板相关信息 -->
+	<bean id="freemarkerConfiguration"
+		class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">
+		<property name="templateLoaderPath" value="classpath:/config/mail" />
+		<property name="freemarkerSettings">
+            <props>
+                <prop key="template_update_delay">0</prop>
+                <prop key="default_encoding">UTF-8</prop>
+            </props>
+        </property>
+	</bean>
+
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="${mail.host}" />
+		<property name="port" value="${mail.port}" />
+		<property name="username" value="${mail.username}" />
+		<property name="password" value="${mail.password}" />
+		<property name="defaultEncoding" value="UTF-8" />
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.debug">true</prop>
+				<prop key="mail.smtp.auth">true</prop>
+				<prop key="mail.smtp.timeout">${mail.smtp.timeout}</prop>
+				
+			</props>
+		</property>
+	</bean>
+	<bean id="simpleMailMessage" class="org.springframework.mail.SimpleMailMessage">
+		<property name="from">
+			<value>${mail.from}</value>
+		</property>		
+	</bean>
+	<bean id="fromMailAddress" class="javax.mail.internet.InternetAddress">
+		<property name="address">
+			<value>${mail.from}</value>
+		</property>
+		<property name="personal">
+			<value>${mail.fromName}</value>
+		</property>
+	</bean>
+	
+	<bean id="mailService" class=" com.jayu.note.MailService">
+		<property name="encoding" value="UTF-8"/>
+		<property name="javaMailSender">
+			<ref bean="mailSender" />
+		</property>
+		<property name="freemarkerConfiguration">
+			<ref bean="freemarkerConfiguration" />
+		</property>
+		<property name="taskExecutor">
+			<ref bean="taskExecutor" />
+		</property>
+			<property name="simpleMailMessage">
+			<ref bean="simpleMailMessage" />
+		</property>
+		<property name="fromAddress">
+			<ref bean="fromMailAddress" />
+		</property>
+	</bean>
+</beans>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd"
+default-lazy-init="true">
+	
+	<bean id="propertiesUtils" class="com.jayu.web.PropertiesUtils" scope="singleton">
+		<property name="message" >
+				<bean class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+					<property name="basenames">
+						<list>
+							<value>classpath:/config/properties/config</value>
+						</list>
+					</property>
+					<!-- 默认不刷新，可以配置定时刷新 <property name="cacheSeconds" value="0"/> -->
+					<property name="defaultEncoding" value="UTF-8" />
+			</bean>
+		</property> 
+	</bean>
+
+	<!--
+	<bean id="lucene.products.factory" class="com.jayu.lucene.LuceneFactory" init-method="init" destroy-method="destory" scope="singleton">
+		<property name="indexPath" value="D:/lucene4.0/products"/> 
+	</bean>
+
+	<bean id="lucene.keywords.factory" class="com.jayu.lucene.LuceneFactory" init-method="init" destroy-method="destory" scope="singleton">
+		<property name="indexPath" value="D:/lucene4.0/keyword"/> 
+	</bean>
+	
+	<bean id="lucene.spellchecker.factory" class="com.jayu.lucene.SpellCheckerFactory" init-method="init" destroy-method="destory" scope="singleton">
+		<property name="indexPath" value="D:/lucene4.0/spellchecker"/> 
+	</bean>
+   -->
+</beans>
+

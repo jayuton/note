@@ -1,0 +1,52 @@
+<@override name="title"><#if article??>${article.title}</#if> </@override>
+<@override name="header">
+	<link href="${contextPath}/assets/js/plugins/editormd/css/editormd.min.css"  rel="stylesheet" type="text/css"  />
+	<script src="${contextPath}/assets/js/plugins/editormd/lib/marked.min.js"></script>
+	 <script src="${contextPath}/assets/js/plugins/editormd/lib/prettify.min.js"></script>
+	 <script src="${contextPath}/assets/js/plugins/editormd/lib/raphael.min.js"></script>
+	 <script src="${contextPath}/assets/js/plugins/editormd/lib/underscore.min.js"></script>
+	 <script src="${contextPath}/assets/js/plugins/editormd/lib/sequence-diagram.min.js"></script>
+	 <script src="${contextPath}/assets/js/plugins/editormd/lib/flowchart.min.js"></script>
+	 <script src="${contextPath}/assets/js/plugins/editormd/lib/jquery.flowchart.min.js"></script>
+	<script src="${contextPath}/assets/js/plugins/editormd/editormd.js"></script>
+</@override>
+<@override name="page-content-body">
+<!-- BEGIN PAGE CONTENT-->
+<div class="row">
+	<h3 class="page-title"><#if article??>	${article.title}</#if></h3>
+	<ul class="page-breadcrumb breadcrumb">
+						<li>
+							作者：<#if article??>	${article.authorName}</#if>   |   
+						</li>
+						<li>
+							更新时间：<#if article??>${article.writeYear}/${article.writeMonth}/${article.writeDay} ${article.writeTime?string("EEEE")}</#if>   |   
+						</li>
+						<li>
+							浏览次数：<#if article??>	99${article.viewCount}</#if>
+						</li>
+		</ul>
+</div>
+<div class="row">
+		<div  id="md_article" class="col-md-12">
+			<#if article??>
+			<textarea style="display:none;">${article.content}</textarea>
+			</#if>
+		</div>				
+</div>
+<!-- END PAGE CONTENT-->
+<script>
+$(function() {
+	editormd.markdownToHTML("md_article", {
+              htmlDecode      : "style,script,iframe",  // you can filter tags decode
+              taskList        : true,
+              previewTheme  : "",//dark
+              codeFold : true,
+              tex             : true,  // 默认不解析
+              flowChart       : true,  // 默认不解析
+              sequenceDiagram : true,  // 默认不解析
+       });
+});
+</script>
+<!-- END JAVASCRIPTS -->
+</@override>
+<@extends name="/guest-template.htm"/>

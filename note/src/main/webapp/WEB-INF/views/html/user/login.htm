@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
+<!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->
+<!--[if !IE]><!-->
+<html lang="en">
+<!--<![endif]-->
+<!-- BEGIN HEAD -->
+<head>
+
+<meta charset="utf-8" />
+<title>Friends Note | Login Page</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no,minimal-ui">
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="full-screen" content="yes">
+<meta name="baidu_union_verify" content="df46c583158d91a9e0001c9c38729099">
+<meta name="keywords" content="笔记,博客,日记,blog,note,java">
+<link href="${contextPath}/assets/css/bootstrap.min.css"
+	rel="stylesheet" type="text/css" />
+<link href="${contextPath}/assets/css/font-awesome.min.css"
+	rel="stylesheet" type="text/css" />
+<link href="${contextPath}/assets/css/style-metronic.css"
+	rel="stylesheet" type="text/css" />
+<link href="${contextPath}/assets/css/style.css" rel="stylesheet"
+	type="text/css" />
+<link href="${contextPath}/assets/css/style-responsive.css"
+	rel="stylesheet" type="text/css" />
+<link href="${contextPath}/assets/css/uniform.default.min.css"
+	  rel="stylesheet" type="text/css" />
+<link href="${contextPath}/assets/css/pages/login-soft.css"
+	rel="stylesheet" type="text/css" />
+<link href="${contextPath}/assets/js/tjs/validate/css/jquery.ketchup.css" rel="stylesheet" media="screen" type="text/css" />
+<link rel="shortcut icon" href="${contextPath}/assets/img/favicon.ico" />
+<@note.csrf_token_js/>
+</head>
+<!-- BEGIN BODY -->
+<body class="login">
+	<!-- BEGIN LOGO -->
+	<div class="logo">
+		<a href="javascript:;">
+			<img src="${contextPath}/assets/img/logo-big.png" alt="logo"  />
+		</a>
+	</div>
+	<!-- END LOGO -->
+	<!-- BEGIN LOGIN -->
+	<div class="content">
+		<!-- BEGIN LOGIN FORM -->
+		<form class="login-form" id="loginform"
+			method="post">
+			<h3 class="form-title">Login to your account</h3>
+			<div class="alert alert-danger display-hide">
+				<button class="close" data-close="alert"></button>
+				<span> Enter any username and password. </span>
+			</div>
+			<div class="form-group">
+				<!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
+				<label class="control-label visible-ie8 visible-ie9">Account</label>
+				<div class="input-icon">
+					<i class="fa fa-user"></i> <input
+						class="form-control placeholder-no-fix" type="text"  data-validate="validate(required:账号不能为空:,maxlength:账号长度至最多为{arg1}:(20)) on(keyup blur)" 
+						autocomplete="off" placeholder="account" name="account"  id="account"/>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label visible-ie8 visible-ie9">Password</label>
+				<div class="input-icon">
+					<i class="fa fa-lock"></i> <input
+						class="form-control placeholder-no-fix" type="password" data-validate="validate(required:密码不能为空:, maxlength:密码长度至最多为{arg1}:(12)) on(keyup blur)"
+						autocomplete="off" placeholder="Password" name="password" id="password" />
+				</div>
+			</div>
+			<div class="form-actions">
+				<label class="checkbox"> <input type="checkbox"
+					name="remember" value="1" /> Remember me
+				</label>
+				<button type="button" class="btn green pull-right" id="loginbutton">
+					Login <i class="m-icon-swapright m-icon-white"></i>
+				</button>
+			</div>
+
+			<div class="forget-password">
+				<h4>Forgot your password ?</h4>
+				<p>
+					no worries, click <a href="javascript:;" id="forget-password">
+						here </a> to reset your password.
+				</p>
+			</div>
+			<div class="create-account">
+				<p>
+					Don't have an account yet ?&nbsp; <a href="javascript:;"
+						id="register-btn"> Register an account </a>
+				</p>
+			</div>
+		</form>
+		<!-- END LOGIN FORM -->
+		<!-- BEGIN FORGOT PASSWORD FORM -->
+		<form class="forget-form"
+			method="post">
+			<h3>Forget Password ?</h3>
+			<p>Enter your e-mail address below to reset your password.</p>
+			<div class="form-group">
+				<div class="input-icon">
+					<i class="fa fa-envelope"></i> <input
+						class="form-control placeholder-no-fix" type="text"
+						autocomplete="off" placeholder="Email" name="email" />
+				</div>
+			</div>
+			<div class="form-actions">
+				<button type="button" id="back-btn" class="btn default">
+					<i class="m-icon-swapleft"></i> Back
+				</button>
+				<button type="button" class="btn green pull-right">
+					Submit <i class="m-icon-swapright m-icon-white"></i>
+				</button>
+			</div>
+		</form>
+		<!-- END FORGOT PASSWORD FORM -->
+		<!-- BEGIN REGISTRATION FORM -->
+		<form class="register-form" id="registerForm"
+			method="post">
+			<h3>Sign Up</h3>
+			<p>Enter your personal details below:</p>
+			<div class="form-group">
+				<label class="control-label visible-ie8 visible-ie9">Nick</label>
+				<div class="input-icon">
+					<i class="fa fa-font"></i> <input
+						class="form-control placeholder-no-fix" type="text" data-validate="validate(required:用户名不能为空:, maxlength:用户名长度至最多为{arg1}:(30)) on(keyup blur)"
+						placeholder="nick" name="nick"  id="nick"/>
+				</div>
+			</div>
+			<div class="form-group">
+				<!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
+				<label class="control-label visible-ie8 visible-ie9">Email</label>
+				<div class="input-icon">
+					<i class="fa fa-envelope"></i> <input
+						class="form-control placeholder-no-fix" type="text" data-validate="validate(required,email,maxlength(30)) on(keyup blur)"
+						placeholder="Email" name="email"  id="email"/>
+				</div>
+			</div>
+			
+			<p>Enter your account details below:</p>
+			<div class="form-group">
+				<label class="control-label visible-ie8 visible-ie9">Account</label>
+				<div class="input-icon">
+					<i class="fa fa-user"></i> <input
+						class="form-control placeholder-no-fix" type="text"
+						autocomplete="off" placeholder="Account" name="account"  id="account" data-validate="validate(required:账号不能为空:, maxlength:账号长度至最多为{arg1}:(30),username:必须是字母开头数字划线等构成) on(keyup blur)"/>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label visible-ie8 visible-ie9">Password</label>
+				<div class="input-icon">
+					<i class="fa fa-lock"></i> <input
+						class="form-control placeholder-no-fix" type="password"
+						autocomplete="off" id="register_password" placeholder="Password" data-validate="validate(required:密码不能为空:, maxlength:密码长度至最多为{arg1}:(10)) on(keyup blur)"
+						name="password" />
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label visible-ie8 visible-ie9">Re-type
+					Your Password</label>
+				<div class="controls">
+					<div class="input-icon">
+						<i class="fa fa-check"></i> <input
+							class="form-control placeholder-no-fix" type="password"
+							autocomplete="off" placeholder="Re-type Your Password" data-validate="validate(required:密码不能为空:, maxlength:密码长度至最多为{arg1}:(10)) on(keyup blur)"
+							name="rpassword"  id="rpassword"/>
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label> <input type="checkbox" name="tnc" /> I agree to the
+					<a href="#"> Terms of Service </a> and <a href="#"> Privacy
+						Policy </a>
+				</label>
+				<div id="register_tnc_error"></div>
+			</div>
+			<div class="form-actions">
+				<button id="register-back-btn" type="button" class="btn default">
+					<i class="m-icon-swapleft"></i> Back
+				</button>
+				<button type="submit" id="register-submit-btn"
+					class="btn green pull-right">
+					Sign Up <i class="m-icon-swapright m-icon-white"></i>
+				</button>
+			</div>
+		</form>
+		<!-- END REGISTRATION FORM -->
+	</div>
+	<!-- END LOGIN -->
+
+	<!-- BEGIN COPYRIGHT -->
+	<#include "/copyright.htm"/>
+	<!-- END COPYRIGHT -->
+	<script src="${contextPath}/assets/js/tjs/jquery-2.1.1.min.js"
+		type="text/javascript"></script>
+	<script src="${contextPath}/assets/js/tjs/bootstrap.min.js"
+		type="text/javascript"></script>
+	<script src="${contextPath}/assets/js/tjs/jquery-migrate-1.2.1.min.js"
+		type="text/javascript"></script>
+	<script src="${contextPath}/assets/js/tjs/jquery.uniform.min.js"
+		type="text/javascript"></script>
+	<script src="${contextPath}/assets/js/ojs/common.js" type="text/javascript"></script>
+	<script src="${contextPath}/assets/js/ojs/note.util.js" type="text/javascript"></script>
+			<script src="${contextPath}/assets/js/ojs/serviceAxClient.js"
+		type="text/javascript"></script>
+	<script src="${contextPath}/assets/js/tjs/validate/jquery.ketchup.js" type="text/javascript"></script>
+	<script src="${contextPath}/assets/js/tjs/validate/jquery.ketchup.validations_zh.js" type="text/javascript"></script>
+	<script src="${contextPath}/assets/js/tjs/validate/jquery.ketchup.helpers.js" type="text/javascript"></script>
+	<script src="${contextPath}/assets/js/tjs/jquery.cookies.js" type="text/javascript"></script>
+	<script src="${contextPath}/assets/js/ojs/common.js" type="text/javascript"></script>
+	<script src="${contextPath}/assets/js/ojs/note.util.js" type="text/javascript"></script>
+	<script src="${contextPath}/assets/js/tjs/app.js"
+			type="text/javascript"></script>
+	<script src="${contextPath}/assets/js/bjs/user/login.js" type="text/javascript"></script>
+	<script src="${contextPath}/assets/js/plugins/backstretch/jquery.backstretch.min.js"
+		type="text/javascript"></script>
+	<script type="text/javascript">
+	var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+	document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F286db9284ab80a82283af49a79001852' type='text/javascript'%3E%3C/script%3E"));
+	</script>
+	<script>
+		$(function() {
+			App.init();
+			Login.init();
+			var baInter=setInterval(function(){
+				$("img").filter(function(){
+					return $(this).attr("src").indexOf("baidu")>0;
+				}).hide();
+				window.clearInterval(baInter);
+				baInter=null;
+			},50);
+		});
+	</script>
+</body>
+</html>

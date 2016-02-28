@@ -1,0 +1,261 @@
+<@override name="title">编辑文章</@override>
+<@override name="header">
+<link href="${contextPath}/assets/js/plugins/editormd/css/editormd.css" rel="stylesheet" type="text/css" />
+<link href="${contextPath}/assets/js/plugins/bootstrap-select/bootstrap-select.min.css"  rel="stylesheet" type="text/css" />
+<link href="${contextPath}/assets/js/plugins/bootstrap-gtreetable/bootstrap-gtreetable.css" rel="stylesheet" />
+<link href="${contextPath}/assets/js/plugins/jquery-tags-input/jquery.tagsinput.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="${contextPath}/assets/js/tjs/jquery/jquery.autocomplete/jquery.autocomplete.css" />
+</@override>
+<@override name="page-content-body">
+		<div class="row">
+				<div class="portlet box blue">
+									<div class="portlet-title">
+										<div class="caption">
+											<i class="fa fa-reorder"></i>编辑文章
+										</div>
+									</div>
+									<div class="portlet-body ">
+										<!-- BEGIN FORM-->
+										<form id="articleAddForm" action="#" class="form-horizontal form-row-seperated">
+											<div class="form-body">
+												<div class="form-group">
+													<label class="col-md-3 control-label">标题<span class="required"> *</span></label>
+													<div class="col-md-6">
+														<input type="text"  id="articleTitle"  value="<#if article ??>${article.title}</#if>" class="form-control" placeholder="Enter text" data-validate="validate(required:标题不能为空:,maxlength:标题至最多为{arg1}:(60)) on(keyup blur)" >
+													</div>
+												</div>
+												<div class="form-group">
+													<label class="col-md-3 control-label">标签</label>
+													<div class="col-md-6"  >
+														<input id="articleTags" type="text" class="form-control tags" value="<#if article ??>${article.tags}</#if>"/>
+													</div>
+												</div>
+												<div class="form-group">
+													<label class="col-md-3 control-label">类目<span class="required"> *</span></label>
+													<div class="col-md-6">
+														<input type="hidden" id="categoryId" value="<#if article??>${article.cateId}</#if>"/>
+														<input type="hidden" id="articleId" value="<#if article??>${article.id}</#if>"/>
+														<div id="categoryDropdown" class="btn-group  bootstrap-select  form-control "  data-title="please select...">
+															<button type="button" class="btn default dropdown-toggle " >
+																<span class="filter-option pull-left"  id="categoryName"><#if article??>${cateNamePath}</#if></span>
+																&nbsp;<span class="caret"></span>
+															</button>
+															<div class="dropdown-menu open" >
+																<ul class="dropdown-menu inner " role="menu" >
+																	<table class="table gtreetable" id="gtreetable"></table>
+																</ul>
+															</div>
+														</div>
+													</div>
+												</div>
+												<div class="form-group">
+												</div>
+												<div class="form-group last">
+														<div class="col-md-12"><div id="article-editormd" ><textarea style="display:none;"><#if article ??>${article.content}</#if></textarea></div></div>
+												</div>
+									
+					
+												<div class="form-group">
+													<label class="col-md-3 control-label">授权指定用户查看</label>
+													<div class="input-group col-md-6" >
+														<span class="input-group-addon">
+															<i class="fa fa-at"></i>
+														</span>
+														<input type="text"  class="form-control  tags"  placeholder="@user" id="atUser"  value="<#if articeAtUserStr ??>${articeAtUserStr}</#if>" >
+													</div>
+												</div>
+											</div>
+											<div class="form-actions top fluid ">
+												<div class="col-md-offset-5 col-md-4">
+													<button type="button"  id="articleSubmit" class="btn green">Update</button>
+													<button type="button" class="btn default" onclick="history.back()">Cancel</button>
+												</div>
+											</div>
+										</form>
+										<!-- END FORM-->
+									</div>
+								</div>
+					
+				</div>
+		
+<!-- END CORE PLUGINS -->
+	<script src="${contextPath}/assets/js/plugins/editormd/editormd.js"></script>
+	<script type="text/javascript" src="${contextPath}/assets/js/plugins/bootstrap-gtreetable/bootstrap-gtreetable.js"></script>
+	<script type="text/javascript" src="${contextPath}/assets/js/plugins/jquery-tags-input/jquery.tagsinput.js"></script>
+<script src="${contextPath}/assets/js/tjs/jquery/jquery.autocomplete/jquery.autocomplete.js"  type="text/javascript"></script>
+<script type="text/javascript" src="${contextPath}/assets/js/tjs/jquery/jquery.overlay/jquery.overlay.js"></script>
+	<script src="${contextPath}/assets/js/ojs/common.js"
+		type="text/javascript"></script>
+			<script src="${contextPath}/assets/js/ojs/serviceAxClient.js"
+		type="text/javascript"></script>
+<script src="${contextPath}/assets/js/bjs/user/article.js"  type="text/javascript"></script>
+	<script>
+		var  articleEditor = null;
+		$(function() {
+			$('#articleTags').tagsInput({
+	            width: 'auto',
+	            'minChars' : 2, //每个标签的小最字符
+	            'maxChars' : 10,
+	            'onAddTag': function () {
+	            	return false;
+	            },
+	        });
+			var atUsers=[];
+			<#if articeAtUserJson??>atUsers=${articeAtUserJson};</#if>
+			user.article.concat_atUser(atUsers);
+			$('#atUser').tagsInput({
+	            width: 'auto',
+	            'minChars' : 2, //每个标签的小最字符
+	            'maxChars' : 10,
+				autocomplete_url:contextPath+"/user/at/list",
+				autocomplete_result:function(data){
+					user.article.put_atUser(data.name,data.id);
+					return data.name;
+				},
+				autocomplete:{
+					parse : function(response) {
+						return $.map(response.data, function(row) {
+							return {
+								data : row
+							};
+						});
+					},
+					formatItem : function(row, i, max) {
+						if(row && row.name){
+							return row.name;
+						}
+						return false;
+					},
+					formatMatch : function(row, i, max) {
+						if(row && row.name){
+							return row.name;
+						}
+						return "";
+					}
+				}
+	        });
+			
+			var categoryDropdown$=$('#categoryDropdown');
+			categoryDropdown$.children('button.dropdown-toggle').on('click',function(e){
+				$(this).parent().toggleClass('open');
+				e.stopPropagation();
+				e.preventDefault();
+			});
+			
+			  $(document).on('click.categoryDropdown',function(e){
+				  if(!$(e.target).parents("#categoryDropdown").length){
+					  $("#categoryDropdown").removeClass('open');
+				  }
+			  });
+			jQuery('#gtreetable').gtreetable({
+				  'isMiniActions':true,
+				  'buttonsDirectContainer':'#categoryDropdown',
+				  'manyroots':true,
+				  'source': function (id) {
+				      return {
+				        type: 'GET',
+				        url: '${contextPath}/user/category/nodeChildren',
+				        data: { 'id': id },        
+				        dataType: 'json',
+				        error: function(XMLHttpRequest) {
+				          alert(XMLHttpRequest.status+': '+XMLHttpRequest.responseText);
+				        },
+				        onComplete:function(that){
+				        }
+				      }
+				   },
+				   'onFill':function(oNewNode,oNode){
+					   if($("#categoryId").val()==oNewNode.id){
+						   oNewNode.isSelected(true); 
+					   }
+					  
+				   },
+				   'onSave':function (oNode) {
+					  return  {
+				          type: 'POST',
+				          url: !oNode.isSaved() ? '${contextPath}/user/category/nodeCreate' : '${contextPath}/user/category/nodeUpdate?id=' + oNode.getId(),
+				          data: {
+				            parent: oNode.getParent(),
+				            name: oNode.getName(),
+				            position: oNode.getInsertPosition(),
+				            related: oNode.getRelatedNodeId()
+				          },
+				          dataType: 'json',
+				          error: function(XMLHttpRequest) {
+				            alert(XMLHttpRequest.status+': '+XMLHttpRequest.responseText);
+				          }
+				        };
+				      },
+				      'onDelete':function (oNode) {
+				        return {
+				          type: 'POST',
+				          url: "${contextPath}/user/category/"+'nodeDelete?id=' + oNode.getId(),
+				          dataType: 'json',
+				          error: function(XMLHttpRequest) {
+				            alert(XMLHttpRequest.status+': '+XMLHttpRequest.responseText);
+				          }
+				        };
+				      },
+			      'onSelect':function(that){
+			    	  	var parents=that.getParents();
+			    	  	var names = [];
+			    	  	names.push(that.name);
+			    	  	for(var i in parents){
+			    	  		names.push(parents[i].name);
+			    	  	}
+			    	  	names.reverse();
+				    	$("#categoryName").text(names.join("->"));
+				    	$("#categoryId").val(that.id);
+				    	//categoryShow=true;
+				    	categoryDropdown$.removeClass("open");
+				  }
+				 
+			});
+
+            articleEditor = editormd("article-editormd", {
+                width: "95%",
+                height: 540,
+                path : '${contextPath}/assets/js/plugins/editormd/lib/',
+                theme : "dark",
+                //previewTheme : "dark",
+                editorTheme : "pastel-on-dark",
+                markdown : '',
+                codeFold : true,
+                //syncScrolling : false,
+                saveHTMLToTextarea : true,    // 保存 HTML 到 Textarea
+                searchReplace : true,
+                watch : true,                // 打开 实时预览
+                emoji : true,
+                taskList : true,
+                tocm            : true,         // Using [TOCM]
+                tex : true,                   // 开启科学公式TeX语言支持，默认关闭
+                flowChart : true,             // 开启流程图支持，默认关闭
+                sequenceDiagram : true,       // 开启时序/序列图支持，默认关闭,
+               imageUpload : false,
+                imageFormats : ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+                imageUploadURL : "./php/upload.php",
+                onload : function() {
+    				if($.browser.mobile){
+    					this.unwatch();
+    				}
+    			},
+    			 onfullscreen : function() {
+                     this.editor.css("border-radius", 0).css("z-index", 9999);
+                 },
+                 onfullscreenExit : function() {
+                     this.editor.css({
+                         zIndex : 999,
+                         border : "none",
+                         "border-radius" : "5px"
+                     });
+                     
+                     this.resize();
+                 }
+            });
+          
+ 		});
+		user.article.init_edit();		
+	</script>
+	<!-- END JAVASCRIPTS -->		 
+</@override>
+<@extends name="/user-template.htm"/>

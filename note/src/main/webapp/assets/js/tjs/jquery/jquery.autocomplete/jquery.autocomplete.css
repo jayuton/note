@@ -1,0 +1,97 @@
+.ac_results {
+	padding: 0px;
+	border: 1px solid #DDD;
+	background-color: white;
+	overflow: hidden;
+	z-index: 99999;
+	margin-top: 5px;
+	-moz-box-shadow: 0 0 5px #ddd;
+	-webkit-box-shadow: 0 0 5px #DDD;
+	box-shadow: 0 0 5px #DDD;
+}
+.ac_results ul {
+	width: 100%;
+	list-style-position: outside;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.ac_results li {
+	margin: 0;
+	padding: 4px 5px;
+	cursor: default;
+	display: block;
+	/*width: 100%;*/
+	font: menu;
+	font-size: 12px;
+	height: 24px;
+	overflow: hidden;
+	cursor: pointer;
+}
+.ac_results li.ckitem {
+	border-bottom: 1px solid #DDD;
+	padding: 0;
+	width: 100%;
+	height: auto;
+}
+.ac_results  li.ckitem .kitem {
+	padding: 3px 5px;
+	cursor: pointer;
+	width: 100%;
+	height: 18px;
+	line-height: 18px;
+	font-weight: bold;
+}
+.ac_results  li.ckitem .citem {
+	height: 18px;
+	line-height: 18px;
+	cursor: pointer;
+	width: 100%;
+	padding: 3px 2px 3px 20px;
+}
+.ac_results li.ckitem  .kitem strong {
+	font-weight: normal;
+}
+.ac_results li.ckitem  .citem strong {
+	color: #C00;
+	font-weight: bold;
+	padding: 0 2px;
+}
+.ac_results li span.sitem{
+	font-weight: normal;
+}
+.ac_results li span.sitem strong {
+	color: #C00;
+	font-weight: bold;
+	font-size: 13px;
+	padding-left: 3px;
+}
+.ac_results li span.ac_left{
+	text-align: left;
+	float:left;
+}
+.ac_results li span.ac_left  {
+	font-weight: bold;
+}
+.ac_results li span.ac_left  strong{
+	font-weight:normal;
+}
+.ac_results li span.ac_right{
+	text-align: right;
+	float:right;
+}
+.ac_results li span.ac_right b {
+	color: #006000;
+}
+.ac_loading {
+	background: url('indicator.gif') left center no-repeat;
+}
+.ac_odd {
+	background-color: #fff;
+}
+.ac_even {
+	background-color: #fcfcfc;
+}
+.ac_over {
+	background-color:#D2EFB2;
+}

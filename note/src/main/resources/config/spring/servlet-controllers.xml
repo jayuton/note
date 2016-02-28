@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:beans="http://www.springframework.org/schema/beans"
+xmlns:p="http://www.springframework.org/schema/p"
+xmlns:context="http://www.springframework.org/schema/context"
+xmlns:aop="http://www.springframework.org/schema/aop"
+xsi:schemaLocation="
+http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd  
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+	<!-- Maps '/' requests to the 'home' view -->
+	<view-controller path="/" view-name="redirect:/login/page"/>
+
+	<context:annotation-config /> 
+	<!--对门户层所有包进行注解拦截-->
+	<context:component-scan base-package=" com.jayu.*.controller" >
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+		<context:include-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
+	</context:component-scan>
+
+	<!-- enable Spring AOP support -->
+	<aop:aspectj-autoproxy proxy-target-class="true" />
+	
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources/ directory -->
+	<!--  resources mapping="/js/**" location="classpath:/ui-res/js/"/>-->
+	<resources mapping="/assets/**" location="/assets/" />
+	<resources mapping="/upload/**" location="/upload/" />
+	<!-- 请求拦截器 -->
+	<interceptors>
+		<!-- 这个拦截器必须全局，设置一些全局参数 -->
+		<beans:bean class=" com.jayu.web.spring.interceptor.PortalInterceptor"/>
+			<interceptor>
+				<mapping path="/login/**" />
+				<beans:bean class=" com.jayu.web.spring.interceptor.SessionInterceptor" >
+					<beans:property name="valid"  value="method"/>
+					<beans:property name="loginUrl"  value="/login/page"/>
+					<beans:property name="sessionKey"  value="_note_ulogin_s_key"/>
+				</beans:bean>
+			</interceptor>
+		
+		<interceptor>
+			<mapping path="/user/**" />
+			<beans:bean class=" com.jayu.web.spring.interceptor.SessionInterceptor" >
+				<beans:property name="valid"  value="url"/>
+				<beans:property name="sessionKey"  value="_note_ulogin_s_key"/>
+				<beans:property name="loginUrl"  value="/login/page"/>
+			</beans:bean>
+		</interceptor>
+		
+			<interceptor>
+			<mapping path="/guest/article/**" />
+			<beans:bean class=" com.jayu.web.spring.interceptor.AuthorityInterceptor">
+				<!-- authorityCode值默认url or method  -->
+				<beans:property name="authorityCode"  value="method"/>
+				<beans:property name="sessionKey"  value="_note_ulogin_s_key"/>
+				<!-- 使拦截失效  -->
+				<beans:property name="forceCheck"  value="true"/>
+				<beans:property name="authorityInterceptor">
+		    		<beans:bean class="com.jayu.note.MyAuthorityInterceptor"/>
+		    	</beans:property>
+			</beans:bean>
+		</interceptor>
+	
+	</interceptors>
+	
+    <beans:bean id="validatorJsonAspect" class=" com.jayu.web.spring.annotation.valid.JsonValidatorAop">
+		<beans:property name="messageSource" ref="validmessageSource" />
+	</beans:bean>
+
+	<!--
+    <beans:bean id="logOperatorAspect" class=" com.jayu.web.spring.annotation.log.LogOperatorAop">
+    	<beans:property name="staffCode" value="account" />
+    	<beans:property name="logDB" >
+    		<beans:bean class="com.jayu.mall.bmo.LogDbBmo"/>
+    	</beans:property>
+	</beans:bean>
+	  -->
+</beans:beans >

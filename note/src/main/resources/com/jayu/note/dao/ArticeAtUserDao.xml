@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.1//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jayu.note.dao.ArticeAtUserDao">
+	
+	<!-- 加入默认缓存 
+	<cache />
+	-->
+
+	<!-- 结果集返回 -->
+	<resultMap id="result" type="com.jayu.note.dao.model.ArticeAtUser">
+   		<!-- javaType="Long" jdbcType="BIGINT"-->
+   		<id property="articleId" column="article_id"/>
+   		<result property="bizId" column="biz_id"/>
+   		<result property="account" column="account"/>
+   		<!--  javaType="Integer" jdbcType="INT" -->
+   		<result property="type" column="type"/>
+	</resultMap>
+
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="fields">
+    <![CDATA[
+			article_id,
+			biz_id,
+			account,
+			type
+    ]]>
+	</sql>
+	
+	<!-- 用于动态组合查询条件 -->
+	<sql id="whereSQL">
+		<if test="pd.whereObjList != null">
+			<where>
+				<foreach collection="pd.whereObjList" item="wo" >
+					<if test="wo.whereKey != null">${wo.whereKey}</if>
+					<choose>
+						<when test="wo.whereOp == 'in' or wo.whereOp == 'IN'">
+							${wo.whereOp}
+							<if test="wo.whereValType == 'list' and  wo.whereValList != null">
+								<foreach collection="wo.whereValList" item="wv" open="("
+								separator="," close=")">${wv}</foreach>
+							</if>
+							<if test="wo.whereValType == 'array' and  wo.whereVal != null">
+								<foreach collection="wo.whereVal" item="wv" open="("
+								separator="," close=")">${wv}</foreach>
+							</if>
+						</when>
+						<when test="wo.whereVal != '' and wo.whereVal != null">
+							<![CDATA[ ${wo.whereOp}]]> #{wo.whereVal[0]}
+						</when>
+						<when test="wo.whereValSql != '' and wo.whereValSql != null">
+							<![CDATA[ ${wo.whereValSql}]]> 
+						</when>
+						<otherwise>
+							<![CDATA[ ${wo.whereOp}]]>
+						</otherwise>
+					</choose>
+				</foreach>
+			</where>
+		</if>
+	</sql>
+	<!-- 分页查询前缀部分  -->
+    <sql id="pagingTop">
+            SELECT * FROM (
+    </sql>
+    
+    <!-- 分页查询后缀部分  -->
+    <sql id="pagingBottom">
+		<![CDATA[LIMIT #{firstIndex,jdbcType=INTEGER} , #{maxIndex,jdbcType=INTEGER} ]]>
+    </sql>
+
+    <!-- 排序  -->
+    <sql id="orderBySQL">
+        <if test="pd.orderBy != null">
+            ORDER BY ${pd.orderBy}
+        </if>
+    </sql>
+    	<!-- 唯一 -->
+	<sql id="distinctSql">
+		<if test="pd.distinct" >DISTINCT</if>
+	</sql>
+	<!-- 条件查询只取一条数据 -->
+    <sql id="rowLimit">
+		<if test="pd.rowLimit and _databaseId=='MySQL'" ><![CDATA[LIMIT  #{pd.rowMin} ,  #{pd.rowMax}]]></if>
+    </sql>
+    <!-- 添加数据  -->
+    <insert id="insert" statementType="PREPARED"  parameterType="com.jayu.note.dao.model.ArticeAtUser">
+        INSERT INTO B_ARTICLE_ATUSER(
+                <include refid="fields" />
+        ) VALUES (
+                #{articleId} ,
+                #{bizId} ,
+                 #{account} ,
+                #{type} 
+        )
+    </insert>
+    
+    <!-- 添加数据  -->
+	<insert id="insertSelective" statementType="PREPARED"  parameterType="com.jayu.note.dao.model.ArticeAtUser">
+		INSERT INTO B_ARTICLE_ATUSER
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			ARTICLE_ID,
+			<if test="bizId!=null">
+				BIZ_ID,
+            </if>
+            <if test="account!=null">
+				ACCOUNT,
+            </if>
+            <if test="type!=null">
+				TYPE 
+            </if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			#{articleId},
+			<if test="bizId!=null">
+				#{bizId},
+            </if>
+            <if test="account!=null">
+				 #{account},
+            </if>
+			 <if test="type!=null">
+				#{type}
+            </if>
+		</trim>
+	</insert>
+  
+    <!--修改数据-->
+    <update id="update" statementType="PREPARED" parameterType="com.jayu.note.dao.model.ArticeAtUser">
+    	UPDATE B_ARTICLE_ATUSER 
+    	<set>
+    		<if test="bizId!=null">
+				BIZ_ID=  #{bizId},
+            </if>
+             <if test="account!=null">
+				ACCOUNT = #{account},
+            </if>
+            <if test="type!=null">
+				TYPE = #{type} 
+            </if>
+        </set>
+    	<where>
+			ARTICLE_ID = #{articleId}
+        </where>        
+    </update>
+    <!--删除数据-->
+    <delete id="delete" statementType="PREPARED" parameterType="Long">
+        DELETE FROM B_ARTICLE_ATUSER WHERE
+			ARTICLE_ID = #{articleId}
+    </delete>
+
+    <!-- 批量删除 -->
+    <delete id="deleteBatch" statementType="PREPARED">
+		DELETE FROM B_ARTICLE_ATUSER WHERE
+			ARTICLE_ID IN 
+			<foreach collection="array" item="id" open="(" separator="," close=")">
+#{id}			
+			</foreach>
+    </delete>
+    
+    <!-- 查询数据总数 -->
+    <select id="getCount" resultType="int" statementType="PREPARED">
+        SELECT count(1) FROM B_ARTICLE_ATUSER
+        <include refid="whereSQL" />
+    </select>
+    
+    <!--查询分页数据-->
+    <select id="findPageDataByWhereAndOrderBy" statementType="PREPARED" resultMap="result" >
+        SELECT <include refid="fields" />
+          FROM B_ARTICLE_ATUSER
+        <include refid="whereSQL" />
+    	<include refid="orderBySQL" />
+        <include refid="pagingBottom" />
+    </select>
+    
+    <!--查询单条数据-->
+    <select id="get" parameterType="Long" statementType="PREPARED"  resultMap="result">
+		SELECT <include refid="fields" />
+		  FROM B_ARTICLE_ATUSER
+		<where> 
+			ARTICLE_ID = #{articleId}
+		</where>
+    </select> 
+    
+    <!--查询所有数据-->
+	<select id="findAllData" statementType="PREPARED"  resultMap="result">
+		SELECT
+		<include refid="fields" />
+		FROM B_ARTICLE_ATUSER
+	</select>
+
+    <!--按条件查询数据-->
+	<select id="findDataByCondition"  statementType="PREPARED"  resultMap="result">
+		SELECT	
+		<include refid="distinctSql" />
+		<include refid="fields" />
+		FROM B_ARTICLE_ATUSER
+		<include refid="whereSQL" />
+		<include refid="rowLimit" />
+		<include refid="orderBySQL" />
+	</select>
+   
+</mapper>

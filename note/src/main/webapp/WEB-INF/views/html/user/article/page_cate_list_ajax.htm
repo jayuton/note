@@ -1,0 +1,113 @@
+<link href="${contextPath}/assets/css/pages/inbox.css"  rel="stylesheet" type="text/css"  />
+<div class="row" >
+	<ul class="page-breadcrumb breadcrumb">
+						<li>
+							<i class="fa fa-home"></i>
+							<a href="${contextPath}/user/main" >
+								Home
+							</a>
+							<i class="fa fa-angle-right"></i>
+						</li>
+						<li>
+							<a href="javascript:;">
+								<#if category??> ${category.name}</#if>文章列表
+							</a>
+						</li>
+		</ul>
+</div>
+
+<div  class="row"  id="article-list-content">
+	<div class="inbox">
+				<div class="col-md-3">
+					<ul class="inbox-nav margin-bottom-10"   id="page_cate_list">
+						<li class="compose-btn">
+							<a href="javascript:;" data-title="Compose" class="btn green">
+								 <#if category??> ${category.name}</#if>文章列表
+							</a>
+						</li>
+						<#if  articleList?? && (articleList?size>0) >
+						<#list articleList  as article>
+						<li class="title"  id="li_${article.id}">
+							<a class="btn readAjax"  data-url="${basePath}/user/artpage/view/${article.id}"  data-editurl="${basePath}/user/article/edit/${article.id}"   data-id="${article.id}"  data-title="${article.title}"  data-time='${article.writeTime?string("YYYY-MM-dd HH:mm")}'  href="javascript:;"   title=' ${article.title}(${article.writeTime?string("YYYY-MM-dd")})'>
+								 ${article.title}(${article.writeTime?string("YYYY-MM-dd")})
+							</a>
+							<b> </b>
+						</li>
+						</#list>
+						</#if>
+					</ul>
+				</div>
+				<div class="col-md-9">
+					<div class="inbox-content"  id="ajax-inbox-content">
+					</div>
+				</div>
+		</div>
+		<a href="javascript:closeViewContent(this);"  id="closeViewBtn"   style="font-size: 50px; position: fixed; top: 45%;right: 10px;z-index: 999">
+			<i  class="fa fa-times-circle fa-3" ></i>
+		</a>
+</div>
+
+<link href="${contextPath}/assets/js/plugins/editormd/css/editormd.preview.min.css"  rel="stylesheet" type="text/css"  />
+<link href="${contextPath}/assets/js/plugins/editormd/css/editormd.min.css"  rel="stylesheet" type="text/css"  />
+<script src="${contextPath}/assets/js/plugins/editormd/lib/marked.min.js"></script>
+<script src="${contextPath}/assets/js/plugins/editormd/lib/prettify.min.js"></script>
+<script src="${contextPath}/assets/js/plugins/editormd/lib/raphael.min.js"></script>
+<script src="${contextPath}/assets/js/plugins/editormd/lib/underscore.min.js"></script>
+<script src="${contextPath}/assets/js/plugins/editormd/lib/sequence-diagram.min.js"></script>
+<script src="${contextPath}/assets/js/plugins/editormd/lib/flowchart.min.js"></script>
+<script src="${contextPath}/assets/js/plugins/editormd/lib/jquery.flowchart.min.js"></script>
+ <script src="${contextPath}/assets/js/plugins/editormd/zepto.min.js"></script>
+<script src="${contextPath}/assets/js/plugins/editormd/editormd.js"></script>
+<script>
+function closeViewContent(){
+	var el=$("#page_cate_list").find("li.active");
+	var pos = (el && el.size() > 0) ? el.offset().top-40 : 100;
+	$("html,body").animate({scrollTop:pos}, 300);  
+	$("#ajax-inbox-content").html("");
+	$("#closeViewBtn").hide();
+}
+function openViewContent(){
+	$("#ajax-inbox-content").show();
+	$("#closeViewBtn").show();
+}
+$(function() {
+    $('.readAjax').on('click', function(){
+		 var that = this;
+      
+		  $.callServiceAsHtmlGet($(that).attr("data-url"), {
+				"before":function(){
+					//$("#articleSubmit").attr("disabled","disabled");
+				},
+				"done" : function(response){
+					if(response.code==0){
+						var data=response.data;
+						
+						$("#content-date").text($(that).attr("data-time"));
+					    $("#articleDetailEdit").attr("href", $(that).attr("data-editurl"));
+					    $(that).closest(".title").addClass("active").siblings().removeClass("active");
+					      	
+						$("#ajax-inbox-content").html(data);
+				          editormd.markdownToHTML("ajax-inbox-content", {
+				              htmlDecode      : "style,script,iframe",  // you can filter tags decode
+				              emoji           : false,
+				              taskList        : true,
+				              previewTheme  : "",//dark
+				              codeFold : true,
+				              tex             : true,  // 默认不解析
+				              flowChart       : true,  // 默认不解析
+				              sequenceDiagram : true,  // 默认不解析
+				       });
+				       openViewContent();
+					}else{
+						
+					}
+				},
+				"always":function(){
+				}
+			});
+        });
+
+});
+	
+</script>
+<!-- END JAVASCRIPTS -->

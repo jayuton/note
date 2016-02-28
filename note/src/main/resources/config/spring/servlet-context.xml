@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd">
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<beans:bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+		<!--不匹配自动加后缀 -->
+		<beans:property name="useSuffixPatternMatch" value="false"/> 
+		<!--匹配自动加后 /斜杆 -->
+		<beans:property name="useTrailingSlashMatch" value="true"/>
+	</beans:bean> 
+	<beans:bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<!--线程安全的访问session true-->  
+    	<beans:property name="synchronizeOnSession" value="false"/>
+		<beans:property name="messageConverters">
+			<util:list>
+					<beans:bean
+						class="org.springframework.http.converter.StringHttpMessageConverter">
+						<beans:property name="supportedMediaTypes">
+							<util:list>
+								<beans:value>text/plain;charset=UTF-8</beans:value>
+								<beans:value>text/html;charset=UTF-8</beans:value>
+							</util:list>
+						</beans:property>
+					</beans:bean>
+					<beans:bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+						<beans:property name="supportedMediaTypes">
+							<util:list>
+								<beans:value>application/json;charset=UTF-8</beans:value>
+								<beans:value>text/plain;charset=UTF-8</beans:value>
+							</util:list>
+						</beans:property>
+				</beans:bean>
+			</util:list>
+		</beans:property>
+	</beans:bean>
+	
+	<!-- Configure the multipart resolver -->
+	<beans:bean id="multipartResolver"
+		class="com.jayu.file.spring.CommonsMultipartResolverListener">
+		<!-- 设置内存缓冲区，超过后写入磁盘，生成临时文件 -->
+		<beans:property name="maxInMemorySize" value="10240" />
+		<!-- 设置上传文件最大值 byte -->
+		<beans:property name="maxUploadSize" value="20480000" />
+		<!-- 设置请求头字符集 -->
+		<beans:property name="defaultEncoding" value="UTF-8" />
+	</beans:bean>
+
+	<!--
+		Resolves views selected for rendering by @Controllers to .jsp
+		resources in the /WEB-INF/views directory
+	-->
+	<beans:bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<beans:property name="prefix" value="/WEB-INF/views/jsp/" />
+		<beans:property name="suffix" value=".jsp" />
+		<beans:property name="order" value="2" />
+		<beans:property name="viewClass"
+			value="com.jayu.web.spring.view.JstlView" />
+	</beans:bean>
+
+	<!--配置freemarker视图重点配置 视图顺序为 1  -->
+	<beans:bean id="freemarkerResolver"
+		class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+		<beans:property name="cache" value="true" />
+		<beans:property name="order" value="1" />
+		<beans:property name="prefix" value="" />
+		<!--前缀 -->
+		<beans:property name="suffix" value=".htm" />
+		<!--后缀 -->
+		<beans:property name="contentType" value="text/html;charset=UTF-8" />
+		<!--编码 -->
+		<beans:property name="viewClass">
+			<beans:value>com.jayu.freemarker.spring.FreeMarkerViewExt</beans:value>
+		</beans:property>
+		<!--
+			上下文，这里配置之后，fkt文件中可以使用${rc.getContextPath()} 来获取文件上下文，
+			类似jsp的request.getContextPath()
+		-->
+		<beans:property name="requestContextAttribute" value="request"></beans:property>
+		<!--
+			如果freemarker自定义函数的话：有个属性 attributesMap这个属性，里面支持方一个map，
+			key-value的方式来定义你的自定义函数。 类要实现freemarker提供的接口。
+		-->
+		<beans:property name="exposeRequestAttributes" value="true" />
+		<beans:property name="exposeSessionAttributes" value="true" />
+		<beans:property name="allowRequestOverride" value="true" />
+		<beans:property name="allowSessionOverride" value="true" />
+		<!-- 允许使用宏  内部代码改造过，false是 可以使用 -->
+		<beans:property name="exposeSpringMacroHelpers" value="false" />
+	</beans:bean>
+	<!-- 这里定义freemarker.properties文件的加载，和后面的对应。 -->
+	<beans:bean id="freemarkerConfiguration"
+		class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<beans:property name="location"
+			value="classpath:/config/properties/freemarker.properties" />
+	</beans:bean>
+	<!-- 配置 Freemarker 加载静态类 -->
+	<beans:bean id="staticBeansWrapper"
+		class="com.jayu.freemarker.spring.StaticBeansWrapper">
+		<beans:property name="properties" >
+			<beans:bean class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+				<beans:property name="location"
+					value="classpath:/config/properties/freemarker.static.bean.properties" />
+			</beans:bean>
+		</beans:property>
+	</beans:bean>
+	<beans:bean id="freemarkerConfig"
+		class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+		<beans:property name="defaultEncoding" value="UTF-8" />
+		<beans:property name="templateLoaderPaths">
+			<beans:list>
+				<!-- 页面文件路径 -->
+				<beans:value>/WEB-INF/views/html/</beans:value>
+				<!-- 页面模板文件路径 -->
+				<beans:value>/WEB-INF/views/decorators/</beans:value>
+				<!-- 自定义宏，函数模板路径  -->
+				<beans:value>/WEB-INF/views/ftl_template/</beans:value>
+			</beans:list>
+		</beans:property>
+		<!-- 模板加载路径 -->
+		<beans:property name="freemarkerSettings" ref="freemarkerConfiguration" />
+		<beans:property name="freemarkerVariables">
+			<beans:map>
+				<beans:entry key="block" value-ref="blockDirective" />
+				<beans:entry key="extends" value-ref="extendsDirective" />
+				<beans:entry key="override" value-ref="overrideDirective" />
+				<beans:entry key="super" value-ref="superDirective" />
+				<beans:entry key="datetime" value-ref="dateTimeMethod" />
+			</beans:map>
+		</beans:property>
+	</beans:bean>
+
+	<!-- 自定义freemarker 标签 -->
+	<beans:bean id="blockDirective"
+		class=" com.jayu.freemarker.directive.BlockDirective" >
+		<beans:property name="customOverrideTemplate">
+			 <beans:bean
+				class="com.jayu.note.CacheCustomTemplate" />
+		</beans:property>
+	</beans:bean>
+	<beans:bean id="extendsDirective"
+		class=" com.jayu.freemarker.directive.ExtendsDirective" />
+	<beans:bean id="overrideDirective"
+		class=" com.jayu.freemarker.directive.OverrideDirective" >
+		<beans:property name="customOverrideTemplate">
+			 <beans:bean
+				class="com.jayu.note.CacheCustomTemplate" />
+		</beans:property>
+	</beans:bean>
+	<beans:bean id="superDirective"
+		class=" com.jayu.freemarker.directive.SuperDirective" />
+	<beans:bean id="dateTimeMethod"
+		class="com.jayu.freemarker.custom.DateTimeMethod" />
+
+	<!-- 验证 -->
+	<beans:bean id="validator"
+		class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"
+		p:validationMessageSource-ref="validmessageSource">
+	</beans:bean>
+	<!-- spring 支持国际化,必须放在context里 -->
+	<beans:bean id="validmessageSource"
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<beans:property name="basenames">
+			<beans:list>
+				<beans:value>classpath:/config/valid/messages</beans:value>
+			</beans:list>
+		</beans:property>
+		<!-- 默认不刷新，可以配置定时刷新 <property name="cacheSeconds" value="0"/> -->
+		<beans:property name="defaultEncoding" value="UTF-8" />
+	</beans:bean>
+
+	<!-- 控制层异常处理返回页面信息总处理 -->
+	<beans:bean id="exceptionResolver"
+		class=" com.jayu.web.spring.exception.PortalHandlerExceptionResolver">
+
+		<beans:property name="defaultErrorView">
+			<beans:value>error/error{ajax}</beans:value>
+		</beans:property>
+		<beans:property name="defaultStatusCode">
+			<beans:value>500</beans:value>
+		</beans:property>
+		<!-- detail:详细异常信息;simple:简单异常提示;其他为默认提示-->
+		<beans:property name="level">
+			<beans:value>系统异常,请稍后再试或联系管理员</beans:value>
+		</beans:property>
+		<beans:property name="statusCodes">
+			<beans:props>
+				<!-- 方法不允许访问 -->
+				<beans:prop key="redirect:{loginurl}">200</beans:prop>
+				<beans:prop key="error/accessForbid{ajax}">200</beans:prop>
+			</beans:props>
+		</beans:property>
+		<beans:property name="exceptionAttribute" value="ex"></beans:property>
+		<beans:property name="exceptionMappings">
+			<beans:props>
+				<beans:prop key="java.io.IOException">/error/error{ajax}</beans:prop>
+				<beans:prop key="java.sql.SQLException">/error/error{ajax}</beans:prop>
+				<!-- 非ajax的，路转到登录页面,ajax的时候,弹出简单登录页面 -->
+				<beans:prop key="com.jayu.exception.SessionException">redirect:{loginurl}</beans:prop>
+				<!-- 非ajax的，路转到无权限访问页面提示,ajax的时候,弹出提示页面窗口 -->
+				<beans:prop key="com.jayu.exception.AuthorityException">/error/forbidden{ajax}</beans:prop>
+			</beans:props>
+		</beans:property>
+		<!-- 过虑哪些不需要异常信息 -->
+		<beans:property name="filterExceptionList">
+			<beans:list>
+				<beans:value>com.jayu.exception.SessionException</beans:value>
+				<beans:value>com.jayu.exception.AuthorityException</beans:value>
+			</beans:list>
+		</beans:property>
+			<beans:property name="exceptionPoint"> 
+			<beans:bean class="com.jayu.note.ExceptionPointHandler"/>
+		</beans:property>
+		<beans:property name="warnLogCategory">
+			<beans:value>org.springframework.web.servlet.handler.SimpleMappingExceptionResolver
+			</beans:value>
+		</beans:property>
+	</beans:bean>
+
+	<!--
+		Imports user-defined @Controller beans that process client requests
+	-->
+	<beans:import resource="servlet-controllers.xml" />
+
+
+</beans:beans>

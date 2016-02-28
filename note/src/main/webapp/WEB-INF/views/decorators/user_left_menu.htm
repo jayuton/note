@@ -1,0 +1,108 @@
+<div class="page-sidebar-wrapper">
+	<div class="page-sidebar navbar-collapse collapse">
+		<!-- BEGIN SIDEBAR MENU -->
+		<ul class="page-sidebar-menu" data-auto-scroll="true"
+			data-slide-speed="200">
+			<li class="sidebar-toggler-wrapper">
+				<!-- BEGIN SIDEBAR TOGGLER BUTTON -->
+				<div class="sidebar-toggler hidden-phone"></div> <!-- BEGIN SIDEBAR TOGGLER BUTTON -->
+			</li>
+			<li class="start <#if cmenu='main'>active</#if>"><a href="${basePath}/user/main"> <i
+					class="fa fa-home"></i> <span class="title"> Dashboard </span><span
+					class="selected"> </span>
+			</a></li>
+			
+			<li class=" <#if cmenu='article_add'>active</#if>" ><a  class="ajaxify"  href="${basePath}/user/article/add"> <i
+					class="fa fa-edit"></i> <span class="title"> 写笔记 </span>
+					<span class="selected"> </span>
+			</a></li>
+
+			<li class=" <#if cmenu='archive_day'>active</#if>" ><a href="javascript:;"><i class="fa fa-clock-o"></i> <span
+					class="title">笔记按日归档</span> <span class="arrow "> </span><span class="selected"> </span>
+			</a>
+				<ul class="sub-menu">
+				<#if  articleArchiveOfDayList?? && (articleArchiveOfDayList?size>0) >
+					<#list articleArchiveOfDayList  as articleArchive>
+						<li><a class="ajaxify"  href="${basePath}/user/artpage/day/${articleArchive.archiveYear}-${articleArchive.archiveMonth}-${articleArchive.archiveDay}"> <i class="fa fa-comments"></i>
+							<span class="badge <#if articleArchive_index==0>badge-important<#else>badge-success</#if>"> ${articleArchive.archiveNumber} </span>${articleArchive.archiveYear}-${articleArchive.archiveMonth}-${articleArchive.archiveDay}
+					</a></li>
+					</#list>
+				</#if>
+				</ul></li>
+			
+			<li class=" <#if cmenu='archive_month'>active</#if>" ><a href="javascript:;"> <i class="fa fa-clock-o"></i> <span
+					class="title">笔记按月归档 </span> <span class="arrow "> </span><span class="selected"> </span>
+			</a>
+				<ul class="sub-menu">
+				<#if  articleArchiveOfMonthList?? && (articleArchiveOfMonthList?size>0) >
+					<#list articleArchiveOfMonthList  as articleArchive>
+						<li><a class="ajaxify"  href="${basePath}/user/artpage/month/${articleArchive.archiveYear}-${articleArchive.archiveMonth}"> <i class="fa fa-comments"></i>
+							<span class="badge <#if articleArchive_index==0>badge-important<#else>badge-success</#if>"> ${articleArchive.archiveNumber} </span>${articleArchive.archiveYear}-${articleArchive.archiveMonth}
+					</a></li>
+					</#list>
+				</#if>
+				</ul>
+			</li>
+			<li class=" <#if cmenu='article_cate'>active</#if>">
+				<a href="javascript:;"> <i class="fa fa-folder-open"></i>
+					<span class="title"> 我的笔记 </span> <span class="arrow "> </span><span class="selected"> </span>
+				</a>
+				<ul class="sub-menu">
+					<#if  categoryList?? && (categoryList?size>0) >
+					<#list categoryList  as category>
+						<li><a  class="ajaxify" href="${basePath}/user/artpage/cate/${category.id}"> <i class="fa fa-cogs"></i>
+								${category.name}  <span class="badge <#if category.articleNum==0>badge-success<#else>badge-important</#if>"> ${category.articleNum} </span>
+								<#if  category.childrenList?? && ((category.childrenList)?size>0) >
+								<span class="arrow"> </span>
+								<ul class="sub-menu">
+								<#list category.childrenList  as child1>
+									<li><a class="ajaxify" href="${basePath}/user/artpage/cate/${child1.id}"> <i class="fa fa-user"></i>
+										${child1.name} <span class="badge <#if child1.articleNum==0>badge-success<#else>badge-important</#if>"> ${child1.articleNum} </span>
+											<#if  child1.childrenList?? && ((child1.childrenList)?size>0) >
+											<span class="arrow"> </span>
+											<ul class="sub-menu">
+												<#list child1.childrenList  as child2>
+													<li>
+														<a  class="ajaxify" href="${basePath}/user/artpage/cate/${child2.id}"> <i class="fa fa-user"></i>
+														${child2.name} <span class="badge <#if child2.articleNum==0>badge-success<#else>badge-important</#if>"> ${child2.articleNum} </span>
+														</a>
+													</li>
+												</#list>
+											</ul>
+											</#if>
+										</a>
+									</li>
+								</#list>
+								</ul>
+								</#if>
+						</a>
+						</li>
+					</#list>
+					</#if>
+				</ul>
+			</li>
+			<li class=" <#if cmenu='friends'>active</#if>" ><a  class="ajaxify"  href="${basePath}/user/category/view"> <i
+					class="fa fa-users"></i> <span class="title">我的朋友圈 </span><span class="selected"> </span>
+			</a></li>
+				<li class=" <#if cmenu='favorite'>active</#if>" ><a  class="ajaxify"  href="${basePath}/user/category/view"> <i
+					class="fa fa-star"></i> <span class="title">我的收藏 </span><span class="selected"> </span>
+			</a></li>
+			<li class=" <#if cmenu='category'>active</#if>" ><a  class="ajaxify"  href="${basePath}/user/category/view"> <i
+					class="fa fa-book"></i> <span class="title"> 类目管理 </span><span class="selected"> </span>
+			</a></li>
+			<li class=" <#if cmenu='profile'>active</#if>" ><a  class="ajaxify"  href="${basePath}/user/profile/view"> <i
+					class="fa fa-user"></i> <span class="title"> 个人资料 </span><span class="selected"> </span>
+			</a></li>
+			<#if Session["_note_ulogin_s_key"]["accountType"]==9>
+			<li class="last <#if cmenu='member'>active</#if> "><a href="javascript:;"> <i class="fa fa-user"></i> <span
+					class="title"> 会员管理 </span> <span class="arrow "> </span><span class="selected"> </span>
+			</a>
+				<ul class="sub-menu">
+					<li><a href="${basePath}/user/member/list" class="ajaxify"> 会员列表</a></li>
+					<li><a href="javascript:;"> 朋友圏 </a></li>
+				</ul></li>
+				</#if>
+		</ul>
+		<!-- END SIDEBAR MENU -->
+	</div>
+</div>

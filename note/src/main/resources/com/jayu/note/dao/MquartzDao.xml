@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.1//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jayu.note.dao.MquartzDao">
+	
+	<!-- 加入默认缓存 
+	<cache />
+	-->
+	<!-- 结果集返回 -->
+	<resultMap id="result" type="com.jayu.note.dao.model.Mquartz">
+   		<!-- javaType="String" jdbcType="VARCHAR"-->
+   		<result property="bizId" column="biz_id"/>
+   		<result property="actionType" column="action_type"/>
+   		<!--  javaType="Integer" jdbcType="INT" -->
+   		<result property="actionStatus" column="action_status"/>
+   		<!--  javaType="Integer" jdbcType="INT" -->
+   		<result property="actionCount" column="action_count"/>
+   		<!--  javaType="Date" jdbcType="DATETIME" -->
+   		<result property="actionStarttime" column="action_starttime"/>
+   		<!--  javaType="String" jdbcType="VARCHAR" -->
+   		<result property="actionAttribute" column="action_attribute"/>
+   		<result property="userId" column="user_id"/>
+	</resultMap>
+
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="fields">
+    <![CDATA[
+			biz_id,
+			action_type,
+			action_status,
+			action_count,
+			action_starttime,
+			action_attribute,
+			user_id
+    ]]>
+	</sql>
+	
+	<!-- 用于动态组合查询条件 -->
+	<sql id="whereSQL">
+		<if test="pd.whereObjList != null">
+			<where>
+				<foreach collection="pd.whereObjList" item="wo" >
+					<if test="wo.whereKey != null">${wo.whereKey}</if>
+					<choose>
+						<when test="wo.whereOp == 'in' or wo.whereOp == 'IN'">
+							${wo.whereOp}
+							<if test="wo.whereValType == 'list' and  wo.whereValList != null">
+								<foreach collection="wo.whereValList" item="wv" open="("
+								separator="," close=")">${wv}</foreach>
+							</if>
+							<if test="wo.whereValType == 'array' and  wo.whereVal != null">
+								<foreach collection="wo.whereVal" item="wv" open="("
+								separator="," close=")">${wv}</foreach>
+							</if>
+						</when>
+						<when test="wo.whereVal != '' and wo.whereVal != null">
+							<![CDATA[ ${wo.whereOp}]]> #{wo.whereVal[0]}
+						</when>
+						<when test="wo.whereValSql != '' and wo.whereValSql != null">
+							<![CDATA[ ${wo.whereValSql}]]> 
+						</when>
+						<otherwise>
+							<![CDATA[ ${wo.whereOp}]]>
+						</otherwise>
+					</choose>
+				</foreach>
+			</where>
+		</if>
+	</sql>
+	<!-- 分页查询前缀部分  -->
+    <sql id="pagingTop">
+            SELECT * FROM (
+    </sql>
+    
+    <!-- 分页查询后缀部分  -->
+    <sql id="pagingBottom">
+		<![CDATA[LIMIT #{firstIndex,jdbcType=INTEGER} , #{maxIndex,jdbcType=INTEGER} ]]>
+    </sql>
+
+    <!-- 排序  -->
+    <sql id="orderBySQL">
+        <if test="pd.orderBy != null">
+            ORDER BY ${pd.orderBy}
+        </if>
+    </sql>
+    	<!-- 唯一 -->
+	<sql id="distinctSql">
+		<if test="pd.distinct" >DISTINCT</if>
+	</sql>
+	<!-- 条件查询只取一条数据 -->
+    <sql id="rowLimit">
+		<if test="pd.rowLimit and _databaseId=='MySQL'" ><![CDATA[LIMIT #{pd.rowMin} , #{pd.rowMax} ]]></if>
+    </sql>
+    <!-- 添加数据  -->
+    <insert id="insert" useGeneratedKeys="false" statementType="PREPARED"  parameterType="com.jayu.note.dao.model.Mquartz">
+        INSERT INTO M_QUARTZ(
+                <include refid="fields" />
+        ) VALUES (
+                #{bizId} ,
+                #{actionType} ,
+                #{actionStatus} ,
+                #{actionCount} ,
+                #{actionStarttime} ,
+                #{actionAttribute} ,
+                #{userId}
+        )
+    </insert>
+    
+    <!-- 添加数据  -->
+	<insert id="insertSelective" useGeneratedKeys="false" statementType="PREPARED"  parameterType="com.jayu.note.dao.model.Mquartz">
+		INSERT INTO M_QUARTZ
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			BIZ_ID,
+			ACTION_TYPE,
+            <if test="actionStatus!=null">
+				ACTION_STATUS ,
+            </if>
+            <if test="actionCount!=null">
+				ACTION_COUNT ,
+            </if>
+            <if test="actionStarttime!=null">
+				ACTION_STARTTIME ,
+            </if>
+            <if test="actionAttribute!=null">
+				ACTION_ATTRIBUTE ,
+            </if>
+             <if test="userId!=null">
+				USER_ID 
+            </if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			#{bizId},
+			#{actionType},
+			 <if test="actionStatus!=null">
+				#{actionStatus},
+            </if>
+			 <if test="actionCount!=null">
+				#{actionCount},
+            </if>
+			 <if test="actionStarttime!=null">
+				#{actionStarttime},
+            </if>
+			 <if test="actionAttribute!=null">
+				#{actionAttribute},
+            </if>
+            <if test="userId!=null">
+				#{userId} 
+            </if>
+		</trim>
+	</insert>
+  
+    <!--修改数据-->
+    <update id="update" statementType="PREPARED" parameterType="com.jayu.note.dao.model.Mquartz">
+    	UPDATE M_QUARTZ 
+    	<set>
+    		<if test="actionType!=null">
+				ACTION_TYPE = #{actionType} ,
+            </if>
+            <if test="actionStatus!=null">
+				ACTION_STATUS = #{actionStatus} ,
+            </if>
+            <if test="actionCount!=null">
+				ACTION_COUNT = #{actionCount} ,
+            </if>
+            <if test="actionStarttime!=null">
+				ACTION_STARTTIME = #{actionStarttime} ,
+            </if>
+            <if test="actionAttribute!=null">
+				ACTION_ATTRIBUTE = #{actionAttribute} ,
+            </if>
+            <if test="userId!=null">
+				USER_ID = #{userId} 
+            </if>
+        </set>
+    	<where>
+			BIZ_ID = #{bizId}
+        </where>        
+    </update>
+    <!--删除数据-->
+    <delete id="delete" statementType="PREPARED" parameterType="String">
+        DELETE FROM M_QUARTZ WHERE
+			BIZ_ID = #{bizId}
+    </delete>
+    <delete id="deleteByBizIdType" statementType="PREPARED" parameterType="String">
+        DELETE FROM M_QUARTZ WHERE
+			BIZ_ID = #{bizId} and ACTION_TYPE = #{actionType}
+    </delete>
+
+	<delete id="deleteByUserId" statementType="PREPARED" parameterType="long">
+        DELETE FROM M_QUARTZ WHERE
+			BIZ_ID = #{userId}
+    </delete>
+    
+    <!-- 批量删除 -->
+    <delete id="deleteBatch" statementType="PREPARED">
+		DELETE FROM M_QUARTZ WHERE
+			BIZ_ID IN 
+			<foreach collection="array" item="id" open="(" separator="," close=")">
+#{id}			
+			</foreach>
+    </delete>
+    
+    <!-- 查询数据总数 -->
+    <select id="getCount" resultType="int" statementType="PREPARED">
+        SELECT count(1) FROM M_QUARTZ
+        <include refid="whereSQL" />
+    </select>
+    
+    <!--查询分页数据-->
+    <select id="findPageDataByWhereAndOrderBy" statementType="PREPARED" resultMap="result" >
+        SELECT <include refid="fields" />
+          FROM M_QUARTZ
+        <include refid="whereSQL" />
+    	<include refid="orderBySQL" />
+        <include refid="pagingBottom" />
+    </select>
+    
+    <!--查询单条数据-->
+    <select id="get" parameterType="String" statementType="PREPARED"  resultMap="result">
+		SELECT <include refid="fields" />
+		  FROM M_QUARTZ
+		<where> 
+			BIZ_ID = #{bizId}
+		</where>
+    </select> 
+    
+    <!--查询所有数据-->
+	<select id="findAllData" statementType="PREPARED"  resultMap="result">
+		SELECT
+		<include refid="fields" />
+		FROM M_QUARTZ
+	</select>
+
+    <!--按条件查询数据-->
+	<select id="findDataByCondition"  statementType="PREPARED"  resultMap="result">
+		SELECT	
+		<include refid="distinctSql" />
+		<include refid="fields" />
+		FROM M_QUARTZ
+		<include refid="whereSQL" />
+		<include refid="rowLimit" />
+		<include refid="orderBySQL" />
+	</select>
+   
+</mapper>
